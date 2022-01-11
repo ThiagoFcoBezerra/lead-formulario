@@ -3,7 +3,7 @@ certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.10
 cryptography==36.0.1
-Django==3.9.9
+Django==4.0.1
 django-widget-tweaks==1.4.9
 environ==1.0
 idna==3.3
