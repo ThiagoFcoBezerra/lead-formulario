@@ -5,6 +5,7 @@ from form_lead.forms import LeadForm
 import requests
 import base64
 import json
+from form_lead.constantes import TOKEN
 
 def index(request):
     leads = LeadForm()
@@ -23,7 +24,7 @@ def enviaDados(request):
             
             host = '45.224.183.52'
             url = "https://{}/webservice/v1/contato".format(host)
-            token = "14:1994cb27c48d1759b83259f4090fe3f7ccfd45ef9761cf9b68210b0dbfda0f7c".encode('utf-8')
+            token = TOKEN.encode('utf-8')
 
             payload = json.dumps({
                 'principal': 'N',
