@@ -1,11 +1,11 @@
-from django.db.models import fields
-from django.shortcuts import render
-from django.http import HttpResponse
+from telnetlib import IP
+from django.shortcuts import get_object_or_404, render
 from form_lead.forms import LeadForm
 import requests
 import base64
 import json
-from form_lead.constantes import TOKEN
+from form_lead.constantes import TOKEN, IPSERVIDOR
+from form_lead.models import Cupon, Leads
 
 def index(request):
     leads = LeadForm()
@@ -22,11 +22,31 @@ def enviaDados(request):
                 'form':form,
             }
             
-            host = '45.224.183.52'
-            url = "https://{}/webservice/v1/contato".format(host)
-            token = TOKEN.encode('utf-8')
+            envia_dados_api(form)
 
-            payload = json.dumps({
+            salva_lead_bd(request)
+
+    return render(request, 'index.html', contexto) 
+
+def salva_lead_bd(request):
+    nome = request.POST['nome']
+    fone_celular = request.POST['fone_celular']
+    fone_whatsapp = request.POST['fone_whatsapp']
+    email = request.POST['email']
+    cidade = request.POST['cidade']
+    uf = request.POST['uf']
+    obs = request.POST['obs']  
+    cupon = get_object_or_404(Cupon, pk=request.POST['cupon'])
+    lead = Leads.objects.create(nome = nome, fone_celular=fone_celular, fone_whatsapp=fone_whatsapp,
+            email=email, cidade=cidade, uf=uf, obs=obs, cupon=cupon,)
+    lead.save()
+
+def envia_dados_api(form):
+    host = IPSERVIDOR
+    url = "https://{}/webservice/v1/contato".format(host)
+    token = TOKEN.encode('utf-8')
+
+    payload = json.dumps({
                 'principal': 'N',
                 'id_cliente': '',
                 'nome': f'{form.cleaned_data.get("nome")}',
@@ -88,16 +108,15 @@ def enviaDados(request):
                 'alerta': ''
             })
 
-            headers = {
+    headers = {
                 'ixcsoft': '',
                 'Authorization': 'Basic {}'.format(base64.b64encode(token).decode('utf-8')),
                 'Content-Type': 'application/json'
             }
 
-            response = requests.post(url, data=payload, headers=headers, verify=False)
+    response = requests.post(url, data=payload, headers=headers, verify=False)
 
-            print(response.text)
-    return render(request, 'index.html', contexto)            
+    print(response.text)           
 
 
 # Create your views here.
