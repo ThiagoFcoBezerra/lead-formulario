@@ -26,7 +26,7 @@ def enviaDados(request):
 
             salva_lead_bd(request)
 
-    return render(request, 'index.html', contexto) 
+    return render(request, 'confirma.html', contexto) 
 
 def salva_lead_bd(request):
     nome = request.POST['nome']
